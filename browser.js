@@ -464,7 +464,12 @@ function Browser(browser_parent, content){
 		var thumbnail_a = document.createElement("a");
 		var thumbnail = document.createElement("img");
 		thumbnail.classList.add("element_thumbnail");
-
+		if(metadata["unavailable"]==true){
+			thumbnail.classList.add("unavailable");
+		}
+		if(metadata["reupload"]==true){
+			thumbnail.classList.add("reupload");
+		}
 		//If thumbnail 404s replace it and a link to the video with an archived version
 		//TODO: This isn't 100% reliable, as some videos don't have thumbnails
 		//      and checking for 404 errors by measuring image size isn't
@@ -478,6 +483,7 @@ function Browser(browser_parent, content){
 					var ext_pos = this.archiveurl.lastIndexOf(".");
 					this.src = this.archiveurl.substring(0, ext_pos) + ".jpg";
 					this.onload = null;
+					this.classList.add("unavailable");
 				}
 			};
 		}

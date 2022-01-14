@@ -159,6 +159,14 @@ input:disabled, button:disabled{
 }
 
 /* Content */
+.unavailable{
+	outline: 2px dashed red;
+	outline-offset: -2px;
+}
+.reupload{
+	outline: 2px dashed yellow;
+	outline-offset: -2px;
+}
 .element{
 	display: inline-block;
 	margin: 4px;
