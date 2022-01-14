@@ -464,8 +464,10 @@ function Browser(browser_parent, content){
 		var thumbnail_a = document.createElement("a");
 		var thumbnail = document.createElement("img");
 		thumbnail.classList.add("element_thumbnail");
+		var archives = Object.keys(metadata["archived"]);
 		if(metadata["unavailable"]==true){
 			thumbnail.classList.add("unavailable");
+			element.href = metadata["archived"][archives[0]];
 		}
 		if(metadata["reupload"]==true){
 			thumbnail.classList.add("reupload");
@@ -474,7 +476,6 @@ function Browser(browser_parent, content){
 		//TODO: This isn't 100% reliable, as some videos don't have thumbnails
 		//      and checking for 404 errors by measuring image size isn't
 		//      reliable, although it works suprisingly well
-		var archives = Object.keys(metadata["archived"]);
 		if(archives.length > 0){
 			thumbnail.archiveurl = metadata["archived"][archives[0]];
 			thumbnail.onload = function(){
