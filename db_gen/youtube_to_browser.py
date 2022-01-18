@@ -5,6 +5,7 @@ import argparse
 import traceback
 import os
 import json
+import datetime
 import dateutil.parser
 import re
 import requests
@@ -92,6 +93,11 @@ def archive_search(metadata):
 			metadata[vid_index]["archived"]["TPA"] = TPA
 	return metadata
 
+default_date = datetime.datetime(year=1, month=6, day=15) #Middle of the year, year 1 by default to indicate that year is missing
+reupload_date_indicators = " originally uploaded in | originally uploaded in: |"
+reupload_date_indicators+= " originally uploaded on | originally uploaded on: |"
+reupload_date_indicators+= " originally uploaded | originally uploaded: |"
+reupload_date_indicators+= " date: "
 def find_reuploads(metadata):
 	#Find videos that are reuploaded based on keywords and mark them
 	#in case the original upload date was given in the description, correct metadata
@@ -99,14 +105,20 @@ def find_reuploads(metadata):
 		video = metadata[video_index]
 
 		description = video["description"]
-		for char in "!@#$%^&*()_+-=[];'\\,./{}:\"|<>?~`\n	": #Replace unnecessary symbols with space
+		for char in "!@#$%^&*()_+-=[];'\\,./{}\"|<>?~`\n	": #Replace unnecessary symbols with space
 			description = description.replace(char, " ")
+		description = " " + description #Treat beginning of description as a new word
 		description = " ".join(description.split()) #Multiple spaces to a single space
 		description = description.lower() #Matching should be case insensitive, so convert description to lowercase
-		for match in re.finditer("originally uploaded in |originally uploaded on |originally uploaded ", description): #After these matches there should be a date when the original was uploaded
+		upload_date = datetime.datetime.strptime(metadata[video_index]["upload_date"], "%Y%m%d")
+		for match in re.finditer(reupload_date_indicators, description): #After these matches there should be a date when the original was uploaded
 			next_three_words = " ".join( description[match.end():].split(" ")[:3] )
 			try:
-				orig_date = dateutil.parser.parse(next_three_words)
+				orig_date = dateutil.parser.parse(next_three_words, default=default_date)
+				if orig_date.year == 1: #No year
+					raise dateutil.parser._parser.ParserError
+				if orig_date >= upload_date: #Reupload of a video from the future
+					raise dateutil.parser._parser.ParserError
 				metadata[video_index]["upload_date"] = orig_date.strftime("%Y%m%d") #Convert to youtube-dl date format
 				metadata[video_index]["reupload"] = True
 			except dateutil.parser._parser.ParserError:
