@@ -165,7 +165,7 @@ def main():
 
 	#Process metadata. At this point recovered unavailable videos and regular videos are combined
 	metadata = find_reuploads(metadata)
-	metadata = pony_rewatch.sort_dict_list(metadata, "upload_date") #Needed for per episode sorting
+	metadata = pony_rewatch.sort_dict_list(metadata, ["upload_date", "id"]) #Needed for per episode sorting
 	metadata = filter_metadata_keys(metadata)
 
 	#Save final metadata into a file

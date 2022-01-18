@@ -52,8 +52,12 @@ def load_json_files(file_list):
 
 def sort_dict_list(dict_list, sort_key):
 	#Sorts a list of dictionaries by sort_key and reutrns it
+	#sort_key can be a list
 	log("Sorting a list of {} dictionaries by key {}".format(len(dict_list), sort_key), "status_big")
-	dict_list = sorted(dict_list, key=lambda element: element[sort_key])
+	if type(sort_key) == list:
+		dict_list = sorted(dict_list, key=lambda element: [element[val] for val in sort_key])
+	else:
+		dict_list = sorted(dict_list, key=lambda element: element[sort_key])
 	log("Dictionary list sorted successfuly", "success")
 	return dict_list
 
